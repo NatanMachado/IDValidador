@@ -1,2 +1,2 @@
 # IDValidador
-validador de documentos como CPF e CNPJ
+Validador de documentos como CPF e CNPJ.
