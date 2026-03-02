@@ -1,3 +1,5 @@
 spring:
   application:
     name: idvalidator
+  server:
+    port: 8080

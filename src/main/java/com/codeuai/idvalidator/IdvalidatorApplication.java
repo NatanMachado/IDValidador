@@ -9,5 +9,4 @@ public class IdvalidatorApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(IdvalidatorApplication.class, args);
 	}
-
 }
