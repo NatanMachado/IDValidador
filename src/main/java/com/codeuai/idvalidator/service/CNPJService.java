@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.codeuai.idvalidator.model.ValidationError;
 
 @Service
-public class CNPJService {
+public class CNPJService implements DocumentValidator {
 
     // --- Constantes de domínio ---
     private final int CNPJ_BASE_LENGTH = 12;
@@ -15,7 +15,8 @@ public class CNPJService {
     private final int DV_RESTO_ZERO = 0;
     private final int DV_RESTO_UM = 1;
 
-    private final Pattern VALID_CHAR = Pattern.compile("^[0-9A-z]$");
+    private final Pattern VALID_CHAR = Pattern.compile("[0-9A-z]$");
+    private final String MASK_CHARACTERS = "[/.-]";
 
     // Pesos definidos pela especificação (2 a 9, repetindo)
     private final int[] PESOS = { 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -48,35 +49,36 @@ public class CNPJService {
     }
 
     // --- Validação do CNPJ completo ---
-    public boolean validar(String cnpj) throws ValidationError {
-        ValidatorService.assertNotNull(cnpj, "O CNPJ NÃO PODE SER NULO.");
-        ValidatorService.assertNotEmpty(cnpj, "O CNPJ NÃO PODE SER VAZIO.");
+    public boolean isValid(String document) throws ValidationError {
+        ValidatorService.assertNotNull(document, "O CNPJ NÃO PODE SER NULO.");
+        ValidatorService.assertNotEmpty(document, "O CNPJ NÃO PODE SER VAZIO.");
 
-        var _cnpj = cnpj.replaceAll("[/.-]", "").toUpperCase();
+        var _cnpj = document.replaceAll(MASK_CHARACTERS, "").toUpperCase();
+        
+        validarConteudo(_cnpj, document);
 
-        validarConteudo(_cnpj);
-        ValidatorService.assertTrue(_cnpj.length() == CNPJ_FULL_LENGTH, cnpj,
-                "NÚMERO DE DÍGITOS INCORRETO. DEVE SER %d.".formatted(CNPJ_FULL_LENGTH));
+        ValidatorService.assertTrue(_cnpj.length() == CNPJ_FULL_LENGTH, document, "NÚMERO DE DÍGITOS INCORRETO. DEVE SER %d.".formatted(CNPJ_FULL_LENGTH));
 
-        validarDV(_cnpj);
+        validarDV(_cnpj, document);
+
         return true;
     }
 
-    private void validarConteudo(String cnpj) throws ValidationError {
+    private void validarConteudo(String cnpj, String document) throws ValidationError {
         for (char c : cnpj.toCharArray()) {
-            ValidatorService.assertTrue(VALID_CHAR.matcher(String.valueOf(c)).matches(), cnpj, "CARACTERE INVÁLIDO: " + c);
+            ValidatorService.assertTrue(VALID_CHAR.matcher(String.valueOf(c)).matches(), document, "CARACTERE INVÁLIDO: " + c);
         }
     }
 
-    private void validarDV(String cnpj) throws ValidationError {
+    private void validarDV(String cnpj, String document) throws ValidationError {
         String base = cnpj.substring(0, CNPJ_BASE_LENGTH);
         int dv1Informado = charToValue(cnpj.charAt(CNPJ_BASE_LENGTH));
         int dv2Informado = charToValue(cnpj.charAt(CNPJ_BASE_LENGTH + 1));
 
         int dv1Calculado = calcularDV(base);
-        ValidatorService.assertTrue(dv1Calculado == dv1Informado, cnpj, "DÍGITO VERIFICADOR 1 INCORRETO.");
+        ValidatorService.assertTrue(dv1Calculado == dv1Informado, document, "DÍGITO VERIFICADOR 1 INCORRETO.");
 
         int dv2Calculado = calcularDV(base + dv1Calculado);
-        ValidatorService.assertTrue(dv2Calculado == dv2Informado, cnpj, "DÍGITO VERIFICADOR 2 INCORRETO.");
+        ValidatorService.assertTrue(dv2Calculado == dv2Informado, document, "DÍGITO VERIFICADOR 2 INCORRETO.");
     }
 }

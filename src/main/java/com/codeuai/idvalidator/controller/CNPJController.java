@@ -27,7 +27,7 @@ public class CNPJController {
 
     @PostMapping
     public ResponseEntity<Response> isValid(@Valid @RequestBody DocumentRequest request) throws ValidationError {
-        boolean isValid = cnpjService.validar(request.document());
+        boolean isValid = cnpjService.isValid(request.document());
         return ResponseEntity.ok(new Response(isValid, new ErrorDto[0]));
     }
 
@@ -37,7 +37,7 @@ public class CNPJController {
 
         for (DocumentRequest request : requests) {
             try {
-                cnpjService.validar(request.document());
+                cnpjService.isValid(request.document());
             } catch (ValidationError error) {
                 errors.add(new ErrorDto(request.document(), error.getMessage()));
             }
