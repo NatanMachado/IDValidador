@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/cpf")
 @RequiredArgsConstructor
-public class CPFController {
+public class CPFController implements IValidator{
 
     private final CPFService cpfService;
 

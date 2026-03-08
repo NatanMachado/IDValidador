@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/cnpj")
 @RequiredArgsConstructor
-public class CNPJController {
+public class CNPJController implements IValidator{
 
     private final CNPJService cnpjService;
 
