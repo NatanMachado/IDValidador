@@ -19,7 +19,8 @@ permissions:
   id-token: write
   actions: read
   security-events: write
-  
+  dependency-graph: write
+
 jobs:
   build:
 
