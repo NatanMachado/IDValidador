@@ -17,6 +17,7 @@ public class CNPJService implements DocumentValidator {
 
     private final Pattern VALID_CHAR = Pattern.compile("[0-9A-z]$");
     private final String MASK_CHARACTERS = "[/.-]";
+    private static final String REGEX_ZERO_VALUE = "^[0]+$";
 
     // Pesos definidos pela especificação (2 a 9, repetindo)
     private final int[] PESOS = { 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -53,7 +54,9 @@ public class CNPJService implements DocumentValidator {
         ValidatorService.assertNotNull(document, "O CNPJ NÃO PODE SER NULO.");
         ValidatorService.assertNotEmpty(document, "O CNPJ NÃO PODE SER VAZIO.");
 
-        var _cnpj = document.replaceAll(MASK_CHARACTERS, "").toUpperCase();
+        var _cnpj = document.trim().replaceAll(MASK_CHARACTERS, "").toUpperCase();
+        
+        ValidatorService.assertTrue(!_cnpj.matches(REGEX_ZERO_VALUE), document, "O CNPJ NÃO PODE SER ZERADO.");
         
         validarConteudo(_cnpj, document);
 
